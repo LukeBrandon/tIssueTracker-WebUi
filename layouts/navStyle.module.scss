@@ -1,0 +1,17 @@
+
+.navBar {
+    margin: 0px !important;
+    padding: 10px;
+    background-color: #0088CA;
+}
+
+.navButton {
+    margin: 0px;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+
+    &:hover {
+        background-color: #0066B3;
+    }
+}
