@@ -49,13 +49,13 @@ export default function ViewBoardPage(){
         <h4>Viewing your board {board.title}</h4>
 
         <p> Title : {board.title}</p>
-        <p> Id : {board._id}</p>
-        <p> UserId : {board.userId}</p>
+        <p> Board Id : {board._id}</p>
+        <p> User Id : {board.userId}</p>
 
         <ListItem issues={issues} status={ISSUE_TODO} statusPretty={ISSUE_TODO_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
-        <ListItem issues={issues} status={ISSUE_IN_PROGRESS} statusPretty={ISSUE_IN_PROGRESS_VIEW} fetchIssues={fetchIssues}></ListItem>
-        <ListItem issues={issues} status={ISSUE_OUT_FOR_REVIEW} statusPretty={ISSUE_OUT_FOR_REVIEW_VIEW} fetchIssues={fetchIssues}></ListItem>
-        <ListItem issues={issues} status={ISSUE_COMPLETED} statusPretty={ISSUE_COMPLETED_VIEW} fetchIssues={fetchIssues}></ListItem>
+        <ListItem issues={issues} status={ISSUE_IN_PROGRESS} statusPretty={ISSUE_IN_PROGRESS_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
+        <ListItem issues={issues} status={ISSUE_OUT_FOR_REVIEW} statusPretty={ISSUE_OUT_FOR_REVIEW_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
+        <ListItem issues={issues} status={ISSUE_COMPLETED} statusPretty={ISSUE_COMPLETED_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
 
       </> }
 

@@ -12,12 +12,24 @@ import { ISSUE_TODO } from "../types/types";
 export default function ListItem({issues, status, statusPretty, fetchIssues, boardId}){
     const [dialogOpen, setdialogOpen] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>("");
+    const [titleFieldValue, setTitleFieldValue] = useState<string>("");
+    const [descFieldValue, setDescFieldValue] = useState<string>("");
+
 
     function handleClose(){
         setdialogOpen(false);
+        setTitleFieldValue("");
+        setDescFieldValue("");
     }
     function handleClickOpen(){
         setdialogOpen(true);
+    }
+
+    function handleTitleFieldChange(e){
+        setTitleFieldValue(e.target.value);
+    }
+    function handleDescFieldChange(e){
+        setDescFieldValue(e.target.value);
     }
 
     async function fetchUserId(){
@@ -33,8 +45,8 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
         console.log(`User Id is ${userId}`);
 
         const createIssueBody = {
-            title: "Created from dialogue",
-            desc: "no",
+            title: titleFieldValue,
+            desc: descFieldValue,
             status: status,
             userId: userId,
             boardId: boardId
@@ -93,6 +105,8 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
           </DialogContentText>
           <TextField
             autoFocus
+            value={titleFieldValue} 
+            onChange={handleTitleFieldChange}
             margin="dense"
             id="title"
             label="Issue Title"
@@ -100,7 +114,8 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
             fullWidth
           />
           <TextField
-            autoFocus
+            value={descFieldValue}
+            onChange={handleDescFieldChange}
             margin="dense"
             id="desc"
             label="Issue Description"
