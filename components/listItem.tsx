@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import styles from "./index.module.scss";
 import { Button }  from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
@@ -7,7 +7,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { ISSUE_TODO } from "../types/types";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import { ISSUE_TODO, ISSUE_IN_PROGRESS, ISSUE_OUT_FOR_REVIEW, ISSUE_COMPLETED } from "../types/types";
 
 export default function ListItem({issues, status, statusPretty, fetchIssues, boardId}){
     const [dialogOpen, setdialogOpen] = useState<boolean>(false);
@@ -32,6 +34,27 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
         setDescFieldValue(e.target.value);
     }
 
+    async function handleStatusChange(event: ChangeEvent<{value: unknown}>, id: string){
+        const changeIssueStatusBody = {
+            _id: id,
+            newStatus: event.target.value
+        }
+
+        const res = await fetch(`http://localhost:6969/issue/update/status`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: "PUT",
+            body: JSON.stringify(changeIssueStatusBody)
+        });
+        res.json()
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+        
+        fetchIssues();
+    }
+
     async function fetchUserId(){
         const url = `http://localhost:6969/board/one/${boardId}`;
     
@@ -42,7 +65,6 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
     }
 
     async function createIssue(){
-        console.log(`User Id is ${userId}`);
 
         const createIssueBody = {
             title: titleFieldValue,
@@ -95,6 +117,17 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
             <>
             <p key={issue._id}>{issue.title}</p>
             <Button variant="contained" color="secondary" key={index} onClick={() => deleteIssue(issue._id, index)}>Delete</Button>
+            <Select
+            labelId="statusPicker"
+            id="statusPicker"
+            value={issue.status}
+            onChange={(e) => handleStatusChange(e, issue._id)}
+            >
+            <MenuItem value={ISSUE_TODO}>Todo</MenuItem>
+            <MenuItem value={ISSUE_IN_PROGRESS}>In Progress</MenuItem>
+            <MenuItem value={ISSUE_OUT_FOR_REVIEW}>Out for Review</MenuItem>
+            <MenuItem value={ISSUE_COMPLETED}>Completed</MenuItem>
+        </Select>
             </>
         ))}
         <Dialog open={dialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
