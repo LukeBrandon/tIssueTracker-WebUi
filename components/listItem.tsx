@@ -7,9 +7,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { ISSUE_TODO, ISSUE_IN_PROGRESS, ISSUE_OUT_FOR_REVIEW, ISSUE_COMPLETED } from "../types/types";
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import { ISSUE_TODO, ISSUE_IN_PROGRESS, ISSUE_OUT_FOR_REVIEW, ISSUE_COMPLETED, Issue } from "../types/types";
+import StatusDropdown from "./issueStatusDropDown";
 
 export default function ListItem({issues, status, statusPretty, fetchIssues, boardId}){
     const [dialogOpen, setdialogOpen] = useState<boolean>(false);
@@ -17,6 +19,11 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
     const [titleFieldValue, setTitleFieldValue] = useState<string>("");
     const [descFieldValue, setDescFieldValue] = useState<string>("");
 
+    const [viewDialogIssueObj, setViewDialogIssueObj] = useState<Issue>(null);
+    const [viewDialogOpen, setViewDialogOpen] = useState<boolean>(false);
+    const [viewDialogTitle, setViewDialogTitle] = useState<string>("");
+    const [viewDialogDesc, setViewDialogDesc] = useState<string>("");
+    const [viewDialogStatus, setViewDialogStatus] = useState<string>("");
 
     function handleClose(){
         setdialogOpen(false);
@@ -34,26 +41,22 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
         setDescFieldValue(e.target.value);
     }
 
-    async function handleStatusChange(event: ChangeEvent<{value: unknown}>, id: string){
-        const changeIssueStatusBody = {
-            _id: id,
-            newStatus: event.target.value
-        }
-
-        const res = await fetch(`http://localhost:6969/issue/update/status`, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            method: "PUT",
-            body: JSON.stringify(changeIssueStatusBody)
-        });
-        res.json()
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
-        
-        fetchIssues();
+    function handleIssueViewOpen(issue){
+        setViewDialogOpen(true);
+        setViewDialogIssueObj(issue);
+        setViewDialogTitle(issue.title);
+        setViewDialogDesc(issue.desc);
+        setViewDialogStatus(issue.status);
     }
+
+    function handleIssueViewClose(){
+        setViewDialogIssueObj(null);
+        setViewDialogTitle("");
+        setViewDialogDesc("");
+        setViewDialogStatus("");
+        setViewDialogOpen(false);
+    }
+
 
     async function fetchUserId(){
         const url = `http://localhost:6969/board/one/${boardId}`;
@@ -108,28 +111,64 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
     }, []);
 
     return(<>
-        <h5> {statusPretty}: </h5>
+        <h3> {statusPretty}: </h3>
         {status == ISSUE_TODO &&
             <Button variant="contained" color="primary" onClick={handleClickOpen}>Create Issue</Button>
         }
         {  issues.length > 0 && issues.map((issue, index) => (
             issue.status == status &&
             <>
-            <p key={issue._id}>{issue.title}</p>
-            <Button variant="contained" color="secondary" key={index} onClick={() => deleteIssue(issue._id, index)}>Delete</Button>
-            <Select
-            labelId="statusPicker"
-            id="statusPicker"
-            value={issue.status}
-            onChange={(e) => handleStatusChange(e, issue._id)}
-            >
-            <MenuItem value={ISSUE_TODO}>Todo</MenuItem>
-            <MenuItem value={ISSUE_IN_PROGRESS}>In Progress</MenuItem>
-            <MenuItem value={ISSUE_OUT_FOR_REVIEW}>Out for Review</MenuItem>
-            <MenuItem value={ISSUE_COMPLETED}>Completed</MenuItem>
-        </Select>
+            <Card>
+                <h4 key={issue._id}>{issue.title}</h4>
+                <p key={`${issue._id}desc`}>{issue.desc}</p>
+                <CardActions>
+                    <Button size="small" variant="contained" color="secondary" key={index} onClick={() => deleteIssue(issue._id, index)}>Delete</Button>
+                    <Button size="small" color="primary" key={index} onClick={() => handleIssueViewOpen(issue)}>View</Button>
+
+                    <StatusDropdown issue={issue} updateIssues={fetchIssues}/>
+                </CardActions>
+            </Card>
             </>
         ))}
+
+
+        {/* View Issue Dialog */}
+        <Dialog open={viewDialogOpen} onClose={handleIssueViewClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Edit your issue</DialogTitle>
+            <DialogContent>
+
+                <DialogContentText>
+                    <TextField
+                        value={viewDialogTitle}
+                        onChange={handleDescFieldChange}
+                        margin="dense"
+                        id="desc"
+                        label="Issue Description"
+                        type="email"
+                        fullWidth
+                    />
+                    <TextField
+                        value={viewDialogDesc} 
+                        onChange={handleTitleFieldChange}
+                        margin="dense"
+                        id="title"
+                        label="Issue Title"
+                        type="email"
+                        fullWidth
+                    />
+                    {/* <StatusDropdown issue={viewDialogIssueObj} updateIssues={null}/> */}
+                </DialogContentText>
+
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleIssueViewClose} color="primary">
+                    Close
+                </Button>
+            </DialogActions>
+        </Dialog>
+
+
+        {/* Create New Issue Dialog */}
         <Dialog open={dialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Create New Issue</DialogTitle>
         <DialogContent>
@@ -164,6 +203,6 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
             Create
           </Button>
         </DialogActions>
-      </Dialog>
-        </>);
+      </Dialog>    
+    </>);
 }
