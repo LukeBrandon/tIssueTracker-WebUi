@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
-import styles from "./index.module.scss";
+import styles from "./index.module.css";
 import NavPage from "../../layouts/navPage";
 import Link from "next/link";
-import { Button }  from "@material-ui/core";
 import { Board, Issue, ISSUE_TODO_VIEW, ISSUE_IN_PROGRESS_VIEW, ISSUE_OUT_FOR_REVIEW_VIEW, ISSUE_COMPLETED_VIEW, IssueStatus, ISSUE_TODO, ISSUE_IN_PROGRESS, ISSUE_OUT_FOR_REVIEW,ISSUE_COMPLETED }  from "../../types/types";
-import ListItem from "../../components/listItem";
+import ListItem from "../../components/listItem/listItem";
 
 export default function ViewBoardPage(){
 
@@ -52,11 +51,12 @@ export default function ViewBoardPage(){
         <p> Board Id : {board._id}</p>
         <p> User Id : {board.userId}</p>
 
-        <ListItem issues={issues} status={ISSUE_TODO} statusPretty={ISSUE_TODO_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
-        <ListItem issues={issues} status={ISSUE_IN_PROGRESS} statusPretty={ISSUE_IN_PROGRESS_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
-        <ListItem issues={issues} status={ISSUE_OUT_FOR_REVIEW} statusPretty={ISSUE_OUT_FOR_REVIEW_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
-        <ListItem issues={issues} status={ISSUE_COMPLETED} statusPretty={ISSUE_COMPLETED_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
-
+        <div className={styles.boardContainer}>
+          <ListItem issues={issues} status={ISSUE_TODO} statusPretty={ISSUE_TODO_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
+          <ListItem issues={issues} status={ISSUE_IN_PROGRESS} statusPretty={ISSUE_IN_PROGRESS_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
+          <ListItem issues={issues} status={ISSUE_OUT_FOR_REVIEW} statusPretty={ISSUE_OUT_FOR_REVIEW_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
+          <ListItem issues={issues} status={ISSUE_COMPLETED} statusPretty={ISSUE_COMPLETED_VIEW} fetchIssues={fetchIssues} boardId={boardId}></ListItem>
+        </div>
       </> }
 
       {!board &&

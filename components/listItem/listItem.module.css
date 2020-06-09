@@ -1,0 +1,23 @@
+.listItemContainer {
+    display: inline-block;
+    margin: 1%;
+}
+
+.issueCard {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    padding-right: 1%;
+    padding-left: 2%;
+}
+
+.centeredContent {
+    justify-content: center;
+}
+
+.centeredButton {
+    width: 100%;
+}
+
+.cardActions {
+    float: right;
+}

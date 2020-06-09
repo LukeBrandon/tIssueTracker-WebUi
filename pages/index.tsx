@@ -1,13 +1,14 @@
 import React from "react";
-import styles from "./index.module.scss";
+import styles from "./index.module.css";
 import NavPage from "../layouts/navPage";
-import Link from "next/link";
 
 export default function HomePage() {
 
   return(
-    <NavPage>
-      <p>Home Page</p>
-    </NavPage>
+    <div className={styles.application}>
+      <NavPage>
+        <p>Welcome to tIssue Tracker, made by Luke Brandon during the COVID-19 Pandemic.</p>
+      </NavPage>
+    </div>
   );
 }

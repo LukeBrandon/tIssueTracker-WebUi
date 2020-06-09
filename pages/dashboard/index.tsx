@@ -122,9 +122,9 @@ export default function DashboardPage() {
                 </CardContent>
 
                 <CardActions>
-                    <Button onClick={() => handleEditBoardClick(board._id, board.title)}>Edit</Button>
-                    <Link key={index} href={{ pathname: 'view-board', query: { boardId: board._id }}}>      
-                        <Button size="small" key={`${index}button`}>View this board</Button>
+                    <Button onClick={() => handleEditBoardClick(board._id, board.title)} key={`${index}button`}>Edit</Button>
+                    <Link key={`${index}link`} href={{ pathname: 'view-board', query: { boardId: board._id }}}>      
+                        <Button size="small" key={`${index}viewBoardButton`}>View this board</Button>
                     </Link>
                 </CardActions>
             </Card>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import styles from "./index.module.scss";
+import styles from "../listItem/listItem.module.css";
 import { Button }  from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,8 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import { ISSUE_TODO, ISSUE_IN_PROGRESS, ISSUE_OUT_FOR_REVIEW, ISSUE_COMPLETED, Issue } from "../types/types";
-import StatusDropdown from "./issueStatusDropDown";
+import { ISSUE_TODO, ISSUE_IN_PROGRESS, ISSUE_OUT_FOR_REVIEW, ISSUE_COMPLETED, Issue } from "../../types/types";
+import StatusDropdown from "../issueStatusDropDown";
 
 export default function ListItem({issues, status, statusPretty, fetchIssues, boardId}){
     const [dialogOpen, setdialogOpen] = useState<boolean>(false);
@@ -63,7 +63,7 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
     
         const res = await fetch(url);
         res.json()
-            .then(res => {console.log(res); setUserId(res.userId)} )
+            .then(res => {setUserId(res.userId)} )
             .catch(err => console.log(err));
     }
 
@@ -93,7 +93,7 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
         fetchIssues();
     }
 
-    async function deleteIssue(issueId:string, index: number){
+    async function deleteIssue(issueId:string){
         const url = `http://localhost:6969/issue/delete/${issueId}`;
     
         const res = await fetch(url, {
@@ -104,33 +104,36 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
             .catch(err => console.log(err));
     
         fetchIssues();
+        handleIssueViewClose();
     }
 
     useEffect(() => {
         fetchUserId();
     }, []);
 
-    return(<>
+    return(<div className={styles.listItemContainer}>
         <h3> {statusPretty}: </h3>
-        {status == ISSUE_TODO &&
-            <Button variant="contained" color="primary" onClick={handleClickOpen}>Create Issue</Button>
-        }
         {  issues.length > 0 && issues.map((issue, index) => (
             issue.status == status &&
-            <>
-            <Card>
-                <h4 key={issue._id}>{issue.title}</h4>
+            <Card className={styles.issueCard} key={`${issue._id}card`}>
+                <h4 key={`${issue._id}title`}>{issue.title}</h4>
                 <p key={`${issue._id}desc`}>{issue.desc}</p>
-                <CardActions>
-                    <Button size="small" variant="contained" color="secondary" key={index} onClick={() => deleteIssue(issue._id, index)}>Delete</Button>
-                    <Button size="small" color="primary" key={index} onClick={() => handleIssueViewOpen(issue)}>View</Button>
+                <CardActions key={`${issue._id}actions`} className={styles.cardActions}>
+                    <Button size="small" color="primary" key={`${issue._id}view`} onClick={() => handleIssueViewOpen(issue)}>View</Button>
 
-                    <StatusDropdown issue={issue} updateIssues={fetchIssues}/>
+                    <StatusDropdown key={`${issue._id}drop`} issue={issue} updateIssues={fetchIssues}/>
                 </CardActions>
             </Card>
-            </>
         ))}
 
+        {/* Create New Issue Button */}
+        { status == ISSUE_TODO &&
+        <Card className={styles.card}>
+            <CardActions className={styles.centeredContent}>
+                <Button className={styles.centeredButton} size="large" onClick={handleClickOpen}>+</Button>
+            </CardActions>
+        </Card>       
+        }
 
         {/* View Issue Dialog */}
         <Dialog open={viewDialogOpen} onClose={handleIssueViewClose} aria-labelledby="form-dialog-title">
@@ -161,6 +164,9 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
 
             </DialogContent>
             <DialogActions>
+                <Button onClick={() => deleteIssue(viewDialogIssueObj._id)} color="secondary">
+                    Delete
+                </Button>
                 <Button onClick={handleIssueViewClose} color="primary">
                     Close
                 </Button>
@@ -204,5 +210,5 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
           </Button>
         </DialogActions>
       </Dialog>    
-    </>);
+    </div>);
 }
