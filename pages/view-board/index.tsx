@@ -15,7 +15,7 @@ export default function ViewBoardPage(){
   const { boardId } = router.query;
 
   async function fetchBoard(){
-    const boardUrl = `http://localhost:6969/board/one/${boardId}`;
+    const boardUrl = `${process.env.API_URL}/board/one/${boardId}`;
 
       const res = await fetch(boardUrl);
       res.json()
@@ -25,7 +25,7 @@ export default function ViewBoardPage(){
   }
 
   async function fetchIssues(){
-    const boardUrl = `http://localhost:6969/issue/all/${boardId}`;
+    const boardUrl = `${process.env.API_URL}/issue/all/${boardId}`;
 
       const res = await fetch(boardUrl);
       res.json()

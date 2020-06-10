@@ -12,7 +12,7 @@ export default function StatusDropdown({issue, updateIssues}){
             newStatus: event.target.value
         }
 
-        const res = await fetch(`http://localhost:6969/issue/update/status`, {
+        const res = await fetch(`${process.env.API_URL}/issue/update/status`, {
             headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

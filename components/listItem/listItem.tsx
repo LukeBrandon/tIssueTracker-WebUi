@@ -59,7 +59,7 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
 
 
     async function fetchUserId(){
-        const url = `http://localhost:6969/board/one/${boardId}`;
+        const url = `${process.env.API_URL}/board/one/${boardId}`;
     
         const res = await fetch(url);
         res.json()
@@ -77,7 +77,7 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
             boardId: boardId
         }
 
-        const res = await fetch(`http://localhost:6969/issue/new`, {
+        const res = await fetch(`${process.env.API_URL}/issue/new`, {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
@@ -94,7 +94,7 @@ export default function ListItem({issues, status, statusPretty, fetchIssues, boa
     }
 
     async function deleteIssue(issueId:string){
-        const url = `http://localhost:6969/issue/delete/${issueId}`;
+        const url = `${process.env.API_URL}/issue/delete/${issueId}`;
     
         const res = await fetch(url, {
           method: 'delete'

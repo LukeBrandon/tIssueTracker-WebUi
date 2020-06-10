@@ -25,8 +25,9 @@ export default function DashboardPage() {
     const userId = 1;
 
     async function fetchBoardData(){
+        console.log(process.env.API_URL);
         //TODO: make this use the userId for the user that is logged in
-        const res = await fetch(`http://localhost:6969/board/all/${userId}`);
+        const res = await fetch(`${process.env.API_URL}/board/all/${userId}`);
         res.json()
             .then(res => setBoards(res as Board[]))
             .catch(err => console.log(err));
@@ -65,7 +66,7 @@ export default function DashboardPage() {
             userId: userId
         }
 
-        const url = `http://localhost:6969/board/new`
+        const url = `${process.env.API_URL}/board/new`
 
         const res = await fetch(url, {
             headers: {
@@ -89,7 +90,7 @@ export default function DashboardPage() {
             newTitle: titleFieldValue,
         }
 
-        const url = `http://localhost:6969/board/update/title`
+        const url = `${process.env.API_URL}/board/update/title`
 
         const res = await fetch(url, {
             headers: {
