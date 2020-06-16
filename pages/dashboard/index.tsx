@@ -13,6 +13,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Link from "next/link";
+import Router from 'next/router'
+import { deleteBoardById } from "../../api/board";
 
 export default function DashboardPage() {
 
@@ -20,13 +22,19 @@ export default function DashboardPage() {
     const [createBoardDialogVisible, setcreateBoardDialogVisible] = useState<boolean>(false);
     const [updateBoardDialogVisible, setupdateBoardDialogVisible] = useState<boolean>(false);
     const [editBoardId, setEditBoardId] = useState<string>("");
-
+    const [confirmDeleteDialogVisible, setconfirmDeleteDialogVisible] = useState<boolean>(false)
+    const [deleteBoardId, setdeleteBoardId] = useState<string>("");
     const [titleFieldValue, settitleFieldValue] = useState<string>("");
-    const userId = 1;
+    let userId;
+        
 
     async function fetchBoardData(){
-        console.log(process.env.API_URL);
-        //TODO: make this use the userId for the user that is logged in
+        userId = localStorage.getItem("tissuetracker-userId");
+
+        if(userId == null){
+            Router.push('/login');
+        }
+
         const res = await fetch(`${process.env.API_URL}/board/all/${userId}`);
         res.json()
             .then(res => setBoards(res as Board[]))
@@ -35,11 +43,25 @@ export default function DashboardPage() {
 
     useEffect(() => {
         fetchBoardData();
-    }, []);
+    }, [userId]);
 
 
     function handleCreateBoardClick(){
         setcreateBoardDialogVisible(true);
+    }
+
+    function handleDeleteBoardClick(boardId: string){
+      setdeleteBoardId(boardId);
+      setconfirmDeleteDialogVisible(true);
+    }
+
+    async function handleDeleteBoardConfirm(){
+      const res = await deleteBoardById(deleteBoardId);
+      res.json()
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+      handleDialogClose();
+      fetchBoardData();
     }
 
     function handleEditBoardClick(boardId: string, boardTitle: string){
@@ -51,9 +73,11 @@ export default function DashboardPage() {
     function handleDialogClose(){
         setcreateBoardDialogVisible(false);
         setupdateBoardDialogVisible(false);
+        setconfirmDeleteDialogVisible(false);
 
         settitleFieldValue("");
         setEditBoardId("");
+        setdeleteBoardId("");
     }
 
     function handleTitleFieldChange(e){
@@ -63,7 +87,7 @@ export default function DashboardPage() {
     async function createBoard() {
         const createBoardBody = {
             title: titleFieldValue,
-            userId: userId
+            userId: localStorage.getItem("tissuetracker-userId")
         }
 
         const url = `${process.env.API_URL}/board/new`
@@ -121,9 +145,10 @@ export default function DashboardPage() {
                 </CardContent>
 
                 <CardActions>
+                    <Button onClick={() => handleDeleteBoardClick(board._id)} key={`${index}deletebutton`} color="secondary" size="small">Delete</Button>
                     <Button onClick={() => handleEditBoardClick(board._id, board.title)} key={`${index}button`}>Edit</Button>
                     <Link key={`${index}link`} href={{ pathname: 'view-board', query: { boardId: board._id }}}>      
-                        <Button size="small" key={`${index}viewBoardButton`}>View this board</Button>
+                        <Button size="small" key={`${index}viewBoardButton`}>View</Button>
                     </Link>
                 </CardActions>
             </Card>
@@ -167,6 +192,25 @@ export default function DashboardPage() {
           </Button>
           <Button onClick={createBoard} color="primary">
             Create
+          </Button>
+        </DialogActions>
+      </Dialog>  
+
+       {/* Confirm delete Dialog */}
+       <Dialog open={confirmDeleteDialogVisible} onClose={handleDialogClose} aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">Delete board</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this board? You cannot undo this action.
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleDeleteBoardConfirm} color="primary">
+            Delete forever
           </Button>
         </DialogActions>
       </Dialog>  
