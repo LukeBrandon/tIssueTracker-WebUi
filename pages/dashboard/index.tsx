@@ -136,7 +136,7 @@ export default function DashboardPage() {
     <NavPage>
         <div className={styles.bodyDiv}>
         {boards.length > 0 &&
-        <h3>Here are your boards, userId: {userId}:</h3>
+        <h3>Here are your boards</h3>
         }
         {boards.length > 0 && boards.map((board, index) => (
             <Card className={styles.card} key={`${index}title`}>
